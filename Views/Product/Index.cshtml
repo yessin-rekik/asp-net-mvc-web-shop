@@ -1,0 +1,104 @@
+@model ProductPaginationViewModel
+@{
+    ViewData["Title"] = "Produits";
+    var categories = ViewData["Categories"] as IList<Category>;
+    var selectedCategory = Model.CategoryId.HasValue
+        ? categories?.FirstOrDefault(c => c.CategoryId == Model.CategoryId.Value)
+        : null;
+    var pageTitle = selectedCategory?.CategoryName ?? "Tous les produits";
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Boutique</span>
+        <h1 class="page-title">@pageTitle</h1>
+        <p class="page-subtitle">
+            @Model.TotalProduits produit(s)
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <span> pour « @Model.SearchTerm »</span>
+            }
+        </p>
+    </div>
+    @if (isStaff)
+    {
+        <a class="btn btn-brand" asp-action="Create">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+            </svg>
+            Nouveau produit
+        </a>
+    }
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.SearchTerm) || Model.CategoryId.HasValue)
+{
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        @if (Model.CategoryId.HasValue)
+        {
+            <span class="badge rounded-pill text-bg-light border py-2 px-3">
+                Catégorie : @selectedCategory?.CategoryName
+                <a class="text-decoration-none ms-2" asp-action="Index" asp-route-q="@Model.SearchTerm" aria-label="Retirer le filtre">×</a>
+            </span>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+        {
+            <span class="badge rounded-pill text-bg-light border py-2 px-3">
+                Recherche : @Model.SearchTerm
+                <a class="text-decoration-none ms-2" asp-action="Index" asp-route-categoryId="@Model.CategoryId" aria-label="Effacer la recherche">×</a>
+            </span>
+        }
+    </div>
+}
+
+@if (Model.Products.Any())
+{
+    <div class="product-grid">
+        @foreach (var product in Model.Products)
+        {
+            <partial name="_ProductCard" model="product" />
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav aria-label="Pagination des produits">
+            <ul class="pagination-modern pagination">
+                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-categoryId="@Model.CategoryId" asp-route-q="@Model.SearchTerm"
+                       asp-route-page="@(Model.PageActuelle - 1)" aria-label="Page précédente">‹</a>
+                </li>
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.PageActuelle ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-categoryId="@Model.CategoryId" asp-route-q="@Model.SearchTerm"
+                           asp-route-page="@i">@i</a>
+                    </li>
+                }
+                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
+                    <a class="page-link" asp-action="Index"
+                       asp-route-categoryId="@Model.CategoryId" asp-route-q="@Model.SearchTerm"
+                       asp-route-page="@(Model.PageActuelle + 1)" aria-label="Page suivante">›</a>
+                </li>
+            </ul>
+            <p class="text-center text-muted small">Page @Model.PageActuelle sur @Model.TotalPages</p>
+        </nav>
+    }
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.6">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+            </svg>
+        </div>
+        <h3>Aucun produit trouvé</h3>
+        <p>Essayez une autre catégorie ou modifiez votre recherche.</p>
+        <a class="btn btn-brand" asp-action="Index">Voir tous les produits</a>
+    </div>
+}

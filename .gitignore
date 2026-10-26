@@ -1,0 +1,22 @@
+## Build output
+[Bb]in/
+[Oo]bj/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## IDE
+.idea/
+.vscode/
+
+## Local secrets and environment-specific settings
+appsettings.Development.json
+
+## OS files
+Thumbs.db
+Desktop.ini
+.DS_Store

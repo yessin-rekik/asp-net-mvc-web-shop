@@ -1,0 +1,40 @@
+@model tp2.Models.Category
+@{
+    ViewData["Title"] = "Nouvelle catégorie";
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="Index">Catégories</a></li>
+    <li>Nouvelle catégorie</li>
+</ul>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <span class="eyebrow">Administration</span>
+                <h1 class="page-title mb-1">Nouvelle catégorie</h1>
+                <p class="page-subtitle mb-4">Créez un nouvel univers pour organiser vos produits.</p>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="CategoryName" class="form-label"></label>
+                        <input asp-for="CategoryName" class="form-control" placeholder="Ex. Accessoires" autofocus />
+                        <span asp-validation-for="CategoryName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-brand px-4">Créer</button>
+                        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

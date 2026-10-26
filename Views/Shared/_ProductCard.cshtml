@@ -1,0 +1,64 @@
+@model tp2.Models.Product
+@{
+    var imagePath = string.IsNullOrWhiteSpace(Model.Image)
+        ? Url.Content("~/images/placeholder.svg")
+        : Url.Content("~/images/" + Model.Image);
+    var stockClass = Model.QteStock <= 0 ? "stock-out" : (Model.QteStock <= 5 ? "stock-low" : "stock-in");
+    var stockLabel = Model.QteStock <= 0 ? "Rupture" : (Model.QteStock <= 5 ? "Stock faible" : "En stock");
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<article class="product-card">
+    <div class="product-media">
+        <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId" aria-label="Voir @Model.Name">
+            <img src="@imagePath" alt="@Model.Name" loading="lazy"
+                 onerror="this.onerror=null;this.src='/images/placeholder.svg';" />
+        </a>
+        <span class="float-badge stock-badge @stockClass">@stockLabel</span>
+    </div>
+
+    <div class="product-body">
+        <a class="product-category" asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId">
+            @(Model.Category?.CategoryName ?? "Sans catégorie")
+        </a>
+        <h3 class="product-title">
+            <a asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId">@Model.Name</a>
+        </h3>
+
+        <div class="product-meta">
+            <div class="price">@Model.Price.ToString("N2") <small>DT</small></div>
+            <span class="text-muted small">Stock : @Model.QteStock</span>
+        </div>
+    </div>
+
+    <div class="product-actions">
+        <a class="btn btn-soft" asp-controller="Product" asp-action="Details" asp-route-id="@Model.ProductId">Détails</a>
+        @if (Model.QteStock > 0)
+        {
+            <form method="post" asp-controller="Panier" asp-action="AddProduct">
+                <input type="hidden" name="id" value="@Model.ProductId" />
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+                <button type="submit" class="btn btn-brand">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M12 10v5M9.5 12.5h5" stroke-linecap="round" />
+                    </svg>
+                    Ajouter
+                </button>
+            </form>
+        }
+        else
+        {
+            <button type="button" class="btn btn-secondary" disabled>Indisponible</button>
+        }
+    </div>
+
+    @if (isStaff)
+    {
+        <div class="staff-links">
+            <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Edit" asp-route-id="@Model.ProductId">Modifier</a>
+            <a class="btn btn-outline-danger" asp-controller="Product" asp-action="Delete" asp-route-id="@Model.ProductId">Supprimer</a>
+        </div>
+    }
+</article>

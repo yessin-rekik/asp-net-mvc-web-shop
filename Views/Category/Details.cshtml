@@ -1,0 +1,53 @@
+@model tp2.Models.Category
+@{
+    ViewData["Title"] = Model.CategoryName;
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="Index">Catégories</a></li>
+    <li>@Model.CategoryName</li>
+</ul>
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Catégorie</span>
+        <h1 class="page-title">@Model.CategoryName</h1>
+        <p class="page-subtitle">@(Model.Products?.Count ?? 0) produit(s) dans cette catégorie.</p>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+        <a class="btn btn-soft" asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId">Voir dans la boutique</a>
+        @if (isStaff)
+        {
+            <a class="btn btn-outline-secondary" asp-action="Edit" asp-route-id="@Model.CategoryId">Modifier</a>
+            <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.CategoryId">Supprimer</a>
+        }
+    </div>
+</div>
+
+@if (Model.Products != null && Model.Products.Any())
+{
+    <div class="product-grid">
+        @foreach (var product in Model.Products.OrderBy(p => p.Name))
+        {
+            <partial name="_ProductCard" model="product" />
+        }
+    </div>
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M4 7h16l-1.4 10.1A2 2 0 0 1 16.6 19H7.4a2 2 0 0 1-2-1.9L4 7Z" stroke-linejoin="round" />
+                <path d="M9 7a3 3 0 0 1 6 0" stroke-linecap="round" />
+            </svg>
+        </div>
+        <h3>Catégorie vide</h3>
+        <p>Aucun produit n'est encore associé à cette catégorie.</p>
+        @if (isStaff)
+        {
+            <a class="btn btn-brand" asp-controller="Product" asp-action="Create">Ajouter un produit</a>
+        }
+    </div>
+}

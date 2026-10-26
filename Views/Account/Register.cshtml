@@ -1,0 +1,46 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Créer un compte";
+}
+
+<div class="auth-section">
+    <div class="auth-card fade-up">
+        <span class="brand-mark">N</span>
+        <h1 class="auth-title">Créer un compte</h1>
+        <p class="auth-subtitle">Quelques secondes suffisent pour commencer vos achats.</p>
+
+        <form method="post">
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="vous@exemple.com" autocomplete="email" autofocus />
+                <span asp-validation-for="Email" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" placeholder="6 caractères min., avec un chiffre" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirmez le mot de passe" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+            </div>
+
+            <button type="submit" class="btn btn-brand w-100 py-2">Créer mon compte</button>
+        </form>
+
+        <p class="text-center text-muted small mt-4 mb-0">
+            Déjà inscrit ?
+            <a asp-action="Login" class="fw-semibold text-decoration-none">Se connecter</a>
+        </p>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

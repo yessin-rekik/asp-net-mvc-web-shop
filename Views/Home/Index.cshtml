@@ -1,0 +1,132 @@
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Accueil";
+}
+
+<section class="hero fade-up">
+    <div class="hero-content">
+        <span class="eyebrow text-white-50">Nouvelle collection</span>
+        <h1>Des produits pensés pour votre quotidien.</h1>
+        <p>
+            Parcourez nos catégories, découvrez des articles sélectionnés avec soin et
+            commandez en quelques clics. Livraison simple, panier intelligent, expérience fluide.
+        </p>
+        <div class="hero-actions">
+            <a class="btn btn-light px-4 py-2" asp-controller="Product" asp-action="Index">Explorer la boutique</a>
+            @if (!User.IsInRole("Admin") && !User.IsInRole("Manager"))
+            {
+                <a class="btn btn-outline-light px-4 py-2" asp-controller="Account" asp-action="Register">Créer un compte</a>
+            }
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <strong>@Model.TotalProducts</strong>
+                <span>produits disponibles</span>
+            </div>
+            <div class="hero-stat">
+                <strong>@Model.TotalCategories</strong>
+                <span>catégories</span>
+            </div>
+            <div class="hero-stat">
+                <strong>24/7</strong>
+                <span>commande en ligne</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (Model.Categories.Any())
+{
+    <section class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var category in Model.Categories)
+            {
+                <a class="btn btn-soft btn-sm rounded-pill px-3"
+                   asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.CategoryId">
+                    @category.CategoryName
+                    <span class="text-muted ms-1">@(category.Products?.Count ?? 0)</span>
+                </a>
+            }
+        </div>
+    </section>
+}
+
+<section>
+    <div class="section-head">
+        <div>
+            <h2>À la une</h2>
+            <p>Les dernières références ajoutées à la boutique.</p>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" asp-controller="Product" asp-action="Index">Voir tout</a>
+    </div>
+
+    @if (Model.FeaturedProducts.Any())
+    {
+        <div class="product-grid">
+            @foreach (var product in Model.FeaturedProducts)
+            {
+                <partial name="_ProductCard" model="product" />
+            }
+        </div>
+    }
+    else
+    {
+        <div class="panel empty-state">
+            <div class="empty-icon">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7">
+                    <path d="M4 7h16l-1.4 10.1A2 2 0 0 1 16.6 19H7.4a2 2 0 0 1-2-1.9L4 7Z" stroke-linejoin="round" />
+                    <path d="M9 7a3 3 0 0 1 6 0" stroke-linecap="round" />
+                </svg>
+            </div>
+            <h3>La boutique se prépare</h3>
+            <p>Aucun produit n'est encore disponible. Revenez très bientôt.</p>
+        </div>
+    }
+</section>
+
+<section class="mt-5">
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="panel h-100">
+                <div class="panel-body">
+                    <div class="empty-icon mb-2" style="width:52px;height:52px;margin:0 0 .75rem;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M3 7h18M3 12h18M3 17h18" stroke-linecap="round" />
+                        </svg>
+                    </div>
+                    <h5 class="fw-bold">Navigation claire</h5>
+                    <p class="text-muted mb-0 small">Filtrez par catégorie depuis le menu latéral et trouvez rapidement ce que vous cherchez.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel h-100">
+                <div class="panel-body">
+                    <div class="empty-icon mb-2" style="width:52px;height:52px;margin:0 0 .75rem;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6" stroke-linecap="round" stroke-linejoin="round" />
+                            <circle cx="10" cy="20" r="1.2" fill="currentColor" stroke="none" />
+                            <circle cx="18" cy="20" r="1.2" fill="currentColor" stroke="none" />
+                        </svg>
+                    </div>
+                    <h5 class="fw-bold">Panier intelligent</h5>
+                    <p class="text-muted mb-0 small">Ajustez les quantités en un clic, consultez le total en temps réel et finalisez votre commande en toute sécurité.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel h-100">
+                <div class="panel-body">
+                    <div class="empty-icon mb-2" style="width:52px;height:52px;margin:0 0 .75rem;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8">
+                            <path d="M12 3l7 3v5c0 4.4-2.7 8.2-7 10-4.3-1.8-7-5.6-7-10V6l7-3Z" stroke-linejoin="round" />
+                            <path d="M9 12l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <h5 class="fw-bold">Commande suivie</h5>
+                    <p class="text-muted mb-0 small">Retrouvez l'historique de vos commandes et le détail de chaque achat depuis votre compte.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

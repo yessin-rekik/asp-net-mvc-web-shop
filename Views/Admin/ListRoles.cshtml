@@ -1,0 +1,65 @@
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<IdentityRole>
+@{
+    ViewData["Title"] = "Gestion des rôles";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Administration</span>
+        <h1 class="page-title">Rôles</h1>
+        <p class="page-subtitle">Gérez les rôles et les utilisateurs qui y sont associés.</p>
+    </div>
+    <a class="btn btn-brand" asp-action="CreateRole">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+            <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+        </svg>
+        Nouveau rôle
+    </a>
+</div>
+
+@if (Model.Any())
+{
+    foreach (var role in Model)
+    {
+        <div class="role-card">
+            <div class="role-card-header">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge rounded-pill text-bg-light border">@role.Name</span>
+                    <span class="role-id">@role.Id</span>
+                </div>
+            </div>
+            <div class="role-card-body d-flex flex-wrap align-items-center justify-content-between gap-2">
+                <span class="text-muted small">Rôle défini dans ASP.NET Core Identity.</span>
+                <div class="d-flex flex-wrap gap-2 align-items-center">
+                    <a class="btn btn-soft btn-sm" asp-action="EditRole" asp-route-id="@role.Id">Modifier</a>
+
+                    <form method="post" asp-action="DeleteRole" asp-route-id="@role.Id" class="d-flex gap-2 align-items-center">
+                        <span id="confirmDeleteSpan_@role.Id" style="display:none" class="d-flex gap-2 align-items-center">
+                            <span class="small text-danger">Confirmer ?</span>
+                            <button type="submit" class="btn btn-danger btn-sm">Oui</button>
+                            <a href="#" class="btn btn-outline-secondary btn-sm" onclick="confirmDelete('@role.Id', false)">Non</a>
+                        </span>
+                        <span id="deleteSpan_@role.Id">
+                            <a href="#" class="btn btn-outline-danger btn-sm" onclick="confirmDelete('@role.Id', true)">Supprimer</a>
+                        </span>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="9" cy="8" r="3" />
+                <path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 8h5M18.5 5.5v5" stroke-linecap="round" />
+            </svg>
+        </div>
+        <h3>Aucun rôle</h3>
+        <p>Créez votre premier rôle pour organiser les permissions.</p>
+        <a class="btn btn-brand" asp-action="CreateRole">Créer un rôle</a>
+    </div>
+}

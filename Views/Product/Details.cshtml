@@ -1,0 +1,104 @@
+@model tp2.Models.Product
+@{
+    ViewData["Title"] = Model.Name;
+    var imagePath = string.IsNullOrWhiteSpace(Model.Image) ? Url.Content("~/images/placeholder.svg") : Url.Content("~/images/" + Model.Image);
+    var stockClass = Model.QteStock <= 0 ? "stock-out" : (Model.QteStock <= 5 ? "stock-low" : "stock-in");
+    var stockLabel = Model.QteStock <= 0 ? "Rupture de stock" : (Model.QteStock <= 5 ? "Stock faible" : "En stock");
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+    var related = ViewBag.RelatedProducts as IEnumerable<Product>;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-controller="Home" asp-action="Index">Accueil</a></li>
+    <li><a asp-controller="Product" asp-action="Index">Produits</a></li>
+    <li>@Model.Name</li>
+</ul>
+
+<div class="row g-4 align-items-start">
+    <div class="col-lg-6">
+        <div class="detail-media">
+            <img src="@imagePath" alt="@Model.Name"
+                 onerror="this.onerror=null;this.src='/images/placeholder.svg';" />
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <a class="product-category" asp-controller="Product" asp-action="Index" asp-route-categoryId="@Model.CategoryId">
+                    @(Model.Category?.CategoryName ?? "Sans catégorie")
+                </a>
+                <h1 class="page-title mt-2 mb-3">@Model.Name</h1>
+
+                <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+                    <div class="detail-price">@Model.Price.ToString("N2") <small class="fs-6 text-muted">DT</small></div>
+                    <span class="stock-badge @stockClass">@stockLabel</span>
+                </div>
+
+                <ul class="detail-list">
+                    <li>
+                        <span>Référence</span>
+                        <span>#@Model.ProductId.ToString("D4")</span>
+                    </li>
+                    <li>
+                        <span>Catégorie</span>
+                        <span>@(Model.Category?.CategoryName ?? "—")</span>
+                    </li>
+                    <li>
+                        <span>Disponibilité</span>
+                        <span>@Model.QteStock unité(s)</span>
+                    </li>
+                </ul>
+
+                <div class="d-flex flex-wrap gap-2 mt-4">
+                    @if (Model.QteStock > 0)
+                    {
+                        <form method="post" asp-controller="Panier" asp-action="AddProduct" class="flex-grow-1">
+                            <input type="hidden" name="id" value="@Model.ProductId" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button type="submit" class="btn btn-brand w-100 py-2">
+                                <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                                    <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M12 10v5M9.5 12.5h5" stroke-linecap="round" />
+                                </svg>
+                                Ajouter au panier
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-secondary flex-grow-1" disabled>Produit indisponible</button>
+                    }
+                    <a class="btn btn-outline-secondary" asp-controller="Panier" asp-action="Index">Mon panier</a>
+                </div>
+
+                @if (isStaff)
+                {
+                    <div class="d-flex flex-wrap gap-2 mt-3 pt-3 border-top">
+                        <a class="btn btn-soft btn-sm" asp-action="Edit" asp-route-id="@Model.ProductId">Modifier</a>
+                        <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@Model.ProductId">Supprimer</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (related != null && related.Any())
+{
+    <section>
+        <div class="section-head">
+            <div>
+                <h2>Dans la même catégorie</h2>
+                <p>D'autres articles pourraient vous intéresser.</p>
+            </div>
+        </div>
+        <div class="product-grid">
+            @foreach (var product in related)
+            {
+                <partial name="_ProductCard" model="product" />
+            }
+        </div>
+    </section>
+}

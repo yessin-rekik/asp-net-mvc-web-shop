@@ -1,0 +1,101 @@
+@model IList<Order>
+@{
+    ViewData["Title"] = "Commandes clients";
+    var statuses = ViewBag.Statuses as string[] ?? OrderStatuses.All;
+    var selectedStatus = ViewBag.SelectedStatus as string;
+    var searchTerm = ViewBag.SearchTerm as string;
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Administration</span>
+        <h1 class="page-title">Commandes clients</h1>
+        <p class="page-subtitle">@Model.Count commande(s) — suivez et mettez à jour leur traitement.</p>
+    </div>
+</div>
+
+<div class="panel mb-3">
+    <div class="panel-body">
+        <form method="get" asp-action="Index" class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label" for="q">Recherche</label>
+                <input id="q" name="q" value="@searchTerm" class="form-control"
+                       placeholder="N° de commande, client ou e-mail" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="status">Statut</label>
+                <select id="status" name="status" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    @foreach (var status in statuses)
+                    {
+                        <option value="@status" selected="@(status == selectedStatus)">
+                            @OrderStatuses.GetLabel(status)
+                        </option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-brand flex-grow-1">Filtrer</button>
+                <a class="btn btn-outline-secondary" asp-action="Index">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.Any())
+{
+    <div class="panel">
+        <div class="table-responsive">
+            <table class="table table-modern align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Commande</th>
+                        <th>Client</th>
+                        <th>Date</th>
+                        <th class="text-center">Articles</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center">Statut</th>
+                        <th class="text-center pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold">#@order.Id.ToString("D5")</td>
+                            <td>
+                                <div class="fw-semibold">@order.CustomerName</div>
+                                <div class="text-muted small">@order.Email</div>
+                            </td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">@order.Items.Sum(i => i.Quantity)</td>
+                            <td class="text-end fw-bold">@order.TotalAmount.ToString("N2") DT</td>
+                            <td class="text-center">
+                                <span class="status-badge @OrderStatuses.GetBadgeClass(order.Status)">
+                                    @OrderStatuses.GetLabel(order.Status)
+                                </span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <a class="btn btn-soft btn-sm" asp-action="Details" asp-route-id="@order.Id">Gérer</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M6 3h12l1 18H5L6 3Z" stroke-linejoin="round" />
+                <path d="M9 8h6M9 12h6" stroke-linecap="round" />
+            </svg>
+        </div>
+        <h3>Aucune commande</h3>
+        <p>Aucune commande ne correspond aux critères sélectionnés.</p>
+        <a class="btn btn-brand" asp-action="Index">Voir toutes les commandes</a>
+    </div>
+}

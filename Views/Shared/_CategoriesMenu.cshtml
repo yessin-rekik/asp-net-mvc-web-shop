@@ -1,0 +1,29 @@
+@model IEnumerable<tp2.Models.Category>
+@{
+    var selectedCategory = Context.Request.Query["categoryId"].ToString();
+    var totalProducts = Model?.Sum(c => c.Products?.Count ?? 0) ?? 0;
+}
+
+<nav class="category-menu" aria-label="Catégories de produits">
+    <a class="category-link @(string.IsNullOrEmpty(selectedCategory) ? "active" : "")"
+       asp-controller="Product" asp-action="Index">
+        <span>Tous les produits</span>
+        <span class="count">@totalProducts</span>
+    </a>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="px-2 py-3 text-muted small">Aucune catégorie disponible.</div>
+    }
+    else
+    {
+        @foreach (var categorie in Model)
+        {
+            <a class="category-link @(selectedCategory == categorie.CategoryId.ToString() ? "active" : "")"
+               asp-controller="Product" asp-action="Index" asp-route-categoryId="@categorie.CategoryId">
+                <span>@categorie.CategoryName</span>
+                <span class="count">@(categorie.Products?.Count ?? 0)</span>
+            </a>
+        }
+    }
+</nav>

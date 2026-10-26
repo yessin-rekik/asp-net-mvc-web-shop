@@ -1,0 +1,46 @@
+@model tp2.Models.Category
+@{
+    ViewData["Title"] = "Supprimer la catégorie";
+    var productCount = Model.Products?.Count ?? 0;
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="Index">Catégories</a></li>
+    <li><a asp-action="Details" asp-route-id="@Model.CategoryId">@Model.CategoryName</a></li>
+    <li>Supprimer</li>
+</ul>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-body p-4 text-center">
+                <div class="empty-icon" style="background:#fef2f2;color:#b91c1c;">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <h1 class="page-title mb-2">Supprimer cette catégorie ?</h1>
+                <p class="text-muted">
+                    <strong>@Model.CategoryName</strong> contient @productCount produit(s).
+                </p>
+
+                @if (productCount > 0)
+                {
+                    <div class="alert alert-warning text-start">
+                        Cette catégorie ne peut pas être supprimée tant qu'elle contient des produits.
+                        Déplacez ou supprimez d'abord ses produits.
+                    </div>
+                    <a class="btn btn-outline-secondary" asp-action="Index">Retour aux catégories</a>
+                }
+                else
+                {
+                    <form asp-action="Delete" method="post" class="d-flex justify-content-center gap-2">
+                        <input type="hidden" asp-for="CategoryId" />
+                        <button type="submit" class="btn btn-danger px-4">Oui, supprimer</button>
+                        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+</div>

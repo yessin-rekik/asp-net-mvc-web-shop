@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Lampe de bureau">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b45309"/><stop offset="1" stop-color="#78350f"/></linearGradient></defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <circle cx="140" cy="100" r="150" fill="#fff" opacity=".08"/>
+  <g fill="none" stroke="#fff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M310 430h180M400 430V255l-90-70"/>
+    <path d="M250 185h120l-25 85h-70z"/>
+    <circle cx="400" cy="430" r="20" fill="#fff" stroke="none"/>
+  </g>
+  <text x="400" y="520" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#fef3c7">Maison</text>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Casque audio">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0f766e"/><stop offset="1" stop-color="#134e4a"/></linearGradient></defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <circle cx="690" cy="80" r="160" fill="#fff" opacity=".07"/>
+  <g fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M280 350v-40a120 120 0 0 1 240 0v40"/>
+    <rect x="250" y="340" width="60" height="110" rx="26"/>
+    <rect x="490" y="340" width="60" height="110" rx="26"/>
+  </g>
+  <text x="400" y="520" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#e6fffa">Audio</text>
+</svg>

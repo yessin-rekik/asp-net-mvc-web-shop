@@ -1,0 +1,78 @@
+﻿@model EditRoleViewModel
+@{
+    ViewData["Title"] = "Modifier le rôle";
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="ListRoles">Rôles</a></li>
+    <li>@Model.RoleName</li>
+    <li>Modifier</li>
+</ul>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <span class="eyebrow">Administration</span>
+                <h1 class="page-title mb-1">Modifier le rôle</h1>
+                <p class="page-subtitle mb-4">Renommez ce rôle ou gérez ses membres.</p>
+
+                <form method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Id" class="form-label"></label>
+                        <input asp-for="Id" disabled class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="RoleName" class="form-label"></label>
+                        <input asp-for="RoleName" class="form-control" />
+                        <span asp-validation-for="RoleName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-brand px-4">Enregistrer</button>
+                        <a class="btn btn-outline-secondary" asp-action="ListRoles">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-header d-flex justify-content-between align-items-center">
+                <span>Utilisateurs dans ce rôle</span>
+                <span class="badge rounded-pill text-bg-light border">@Model.Users.Count</span>
+            </div>
+            <div class="panel-body">
+                @if (Model.Users.Any())
+                {
+                    <ul class="list-unstyled mb-0">
+                        @foreach (var user in Model.Users)
+                        {
+                            <li class="d-flex align-items-center gap-2 py-2 border-bottom">
+                                <span class="avatar">@(user.Substring(0, 1).ToUpperInvariant())</span>
+                                <span class="fw-semibold text-truncate">@user</span>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">Aucun utilisateur n'a encore ce rôle.</p>
+                }
+            </div>
+            <div class="panel-body pt-0">
+                <a class="btn btn-soft w-100" asp-action="EditUsersInRole" asp-route-roleId="@Model.Id">
+                    Ajouter ou retirer des utilisateurs
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

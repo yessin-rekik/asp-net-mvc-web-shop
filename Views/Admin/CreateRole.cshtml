@@ -1,0 +1,40 @@
+﻿@model CreateRoleViewModel
+@{
+    ViewData["Title"] = "Nouveau rôle";
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="ListRoles">Rôles</a></li>
+    <li>Nouveau rôle</li>
+</ul>
+
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <span class="eyebrow">Administration</span>
+                <h1 class="page-title mb-1">Nouveau rôle</h1>
+                <p class="page-subtitle mb-4">Créez un rôle pour regrouper des permissions.</p>
+
+                <form asp-action="CreateRole" method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="RoleName" class="form-label"></label>
+                        <input asp-for="RoleName" class="form-control" placeholder="Ex. Manager" autofocus />
+                        <span asp-validation-for="RoleName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-brand px-4">Créer le rôle</button>
+                        <a class="btn btn-outline-secondary" asp-action="ListRoles">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

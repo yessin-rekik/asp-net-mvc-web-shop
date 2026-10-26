@@ -1,0 +1,28 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Erreur";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="panel empty-state">
+            <div class="empty-icon" style="background:#fef2f2;color:#b91c1c;">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.9">
+                    <path d="M12 8v5M12 16.5v.5" stroke-linecap="round" />
+                    <path d="M10.3 3.9L2.5 18a1.8 1.8 0 0 0 1.6 2.7h15.8a1.8 1.8 0 0 0 1.6-2.7L13.7 3.9a1.9 1.9 0 0 0-3.4 0Z" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h1 class="page-title mb-2">Une erreur est survenue</h1>
+            <p>Nous n'avons pas pu traiter votre demande. Veuillez réessayer dans un instant.</p>
+
+            @if (Model.ShowRequestId)
+            {
+                <p class="small text-muted">
+                    Identifiant de la requête : <code>@Model.RequestId</code>
+                </p>
+            }
+
+            <a class="btn btn-brand" asp-controller="Home" asp-action="Index">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>

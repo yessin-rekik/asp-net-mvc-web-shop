@@ -1,0 +1,239 @@
+﻿@using Microsoft.AspNetCore.Antiforgery
+@using Microsoft.AspNetCore.Identity
+@using tp2.Models
+@using tp2.Models.Help
+@using tp2.Models.Repositories
+@inject SignInManager<IdentityUser> SignInManager
+@inject ICategorieRepository CategorieRepository
+@inject CartService CartService
+@inject IAntiforgery Antiforgery
+@{
+    var sidebarCategories = ViewData["Categories"] as IList<Category> ?? CategorieRepository.GetAll();
+    var cartCount = CartService.GetItemCount();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+    var canManageOrders = isStaff || User.IsInRole("OrderManager");
+    var csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0f766e" />
+    <meta name="csrf-token" content="@csrfToken" />
+    <title>@ViewData["Title"] - NovaShop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/tp2.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="brand-mark">N</span>
+                    <span>NovaShop</span>
+                </a>
+
+                <button class="btn btn-icon nav-sidebar-toggle me-2" type="button" id="toggleMenu"
+                        aria-label="Afficher ou masquer les catégories" aria-controls="sidebar" aria-expanded="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" />
+                    </svg>
+                </button>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
+                        aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav me-auto align-items-lg-center gap-lg-1">
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Home" ? "active" : "")"
+                               asp-controller="Home" asp-action="Index">Accueil</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Product" ? "active" : "")"
+                               asp-controller="Product" asp-action="Index">Produits</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(currentController == "Category" ? "active" : "")"
+                               asp-controller="Category" asp-action="Index">Catégories</a>
+                        </li>
+                        @if (canManageOrders)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(currentController == "Orders" ? "active" : "")"
+                                   asp-controller="Orders" asp-action="Index">Commandes</a>
+                            </li>
+                        }
+                        @if (isStaff)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @(currentController == "Admin" ? "active" : "")"
+                                   href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Administration
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li><a class="dropdown-item" asp-controller="Product" asp-action="Create">Nouveau produit</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Category" asp-action="Create">Nouvelle catégorie</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Orders" asp-action="Index">Gérer les commandes</a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider" /></li>
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="ListRoles">Gestion des rôles</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+
+                    <form class="nav-search d-flex" asp-controller="Product" asp-action="Index" method="get" role="search">
+                        <input class="form-control" type="search" name="q" value="@Context.Request.Query["q"]"
+                               placeholder="Rechercher un produit..." aria-label="Rechercher un produit">
+                        <button class="btn btn-search" type="submit" aria-label="Rechercher">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="7"></circle>
+                                <path d="M20 20l-3.5-3.5" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </form>
+
+                    <ul class="navbar-nav align-items-lg-center gap-lg-1 ms-lg-2">
+                        <li class="nav-item">
+                            <a class="nav-link cart-link" asp-controller="Panier" asp-action="Index">
+                                <span class="cart-icon">
+                                    <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8">
+                                        <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6" stroke-linecap="round" stroke-linejoin="round" />
+                                        <circle cx="10" cy="20" r="1.2" fill="currentColor" stroke="none" />
+                                        <circle cx="18" cy="20" r="1.2" fill="currentColor" stroke="none" />
+                                    </svg>
+                                </span>
+                                <span class="d-lg-none ms-2">Mon panier</span>
+                                <span class="badge cart-badge" id="cart-count">@cartCount</span>
+                            </a>
+                        </li>
+
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle user-chip" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span class="avatar">@((User.Identity?.Name ?? "U").Substring(0, 1).ToUpperInvariant())</span>
+                                    <span class="d-none d-xl-inline text-truncate" style="max-width: 130px;">@User.Identity?.Name</span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile">Mon profil</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Panier" asp-action="Orders">Mes commandes</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword">Changer le mot de passe</a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><a class="dropdown-item" asp-controller="Admin" asp-action="ListRoles">Rôles &amp; utilisateurs</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider" /></li>
+                                    <li>
+                                        <form method="post" asp-controller="Account" asp-action="Logout">
+                                            <button type="submit" class="dropdown-item text-danger">Se déconnecter</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Account" asp-action="Login">Connexion</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-brand btn-sm ms-lg-1" asp-controller="Account" asp-action="Register">Créer un compte</a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+    <div class="container-fluid app-shell">
+        <div class="row g-0">
+            <aside class="col-lg-2 sidebar" id="sidebar">
+                <div class="sidebar-inner">
+                    <div class="sidebar-head d-flex align-items-center justify-content-between">
+                        <span>
+                            <span class="sidebar-eyebrow">Parcourir</span>
+                            <strong>Catégories</strong>
+                        </span>
+                        <button type="button" class="btn btn-sm btn-light d-lg-none" id="closeSidebar" aria-label="Fermer le menu">×</button>
+                    </div>
+                    <partial name="_CategoriesMenu" model="sidebarCategories" />
+                </div>
+            </aside>
+
+            <div class="col-lg-10 main-content" id="mainContent">
+                <main role="main" class="pb-5">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container-fluid px-lg-4">
+            <div class="row g-4 align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand"><span class="brand-mark">N</span> NovaShop</div>
+                    <p class="mb-0 text-muted small">Votre boutique en ligne — produits soigneusement sélectionnés.</p>
+                </div>
+                <div class="col-md-6">
+                    <ul class="footer-links justify-content-md-end">
+                        <li><a asp-controller="Home" asp-action="Index">Accueil</a></li>
+                        <li><a asp-controller="Product" asp-action="Index">Produits</a></li>
+                        <li><a asp-controller="Home" asp-action="Privacy">Privacy</a></li>
+                    </ul>
+                    <p class="text-md-end text-muted small mb-0">&copy; @DateTime.Now.Year NovaShop. Tous droits réservés.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    @{
+        var toastMessage = TempData["SuccessMessage"] as string;
+        var toastError = TempData["ErrorMessage"] as string;
+    }
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+        @if (!string.IsNullOrWhiteSpace(toastMessage))
+        {
+            <div class="toast align-items-center border-0 app-toast toast-success" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4500">
+                <div class="d-flex">
+                    <div class="toast-body">@toastMessage</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+                </div>
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(toastError))
+        {
+            <div class="toast align-items-center border-0 app-toast toast-error" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+                <div class="d-flex">
+                    <div class="toast-body">@toastError</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fermer"></button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <partial name="_Chatbot" />
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Monscript.js" asp-append-version="true"></script>
+    <script src="~/js/CustomScript.js" asp-append-version="true"></script>
+    <script src="~/js/chatbot.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+

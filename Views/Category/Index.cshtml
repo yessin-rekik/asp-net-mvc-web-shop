@@ -1,0 +1,82 @@
+@model IEnumerable<tp2.Models.Category>
+@{
+    ViewData["Title"] = "Catégories";
+    var isStaff = User.IsInRole("Admin") || User.IsInRole("Manager");
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Catalogue</span>
+        <h1 class="page-title">Catégories</h1>
+        <p class="page-subtitle">Explorez le catalogue par univers.</p>
+    </div>
+    @if (isStaff)
+    {
+        <a class="btn btn-brand" asp-action="Create">
+            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" class="me-1">
+                <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+            </svg>
+            Nouvelle catégorie
+        </a>
+    }
+</div>
+
+@if (Model.Any())
+{
+    <div class="row g-3">
+        @foreach (var category in Model)
+        {
+            var productCount = category.Products?.Count ?? 0;
+            <div class="col-md-6 col-xl-4">
+                <div class="panel h-100">
+                    <div class="panel-body d-flex flex-column h-100">
+                        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                            <h2 class="h5 fw-bold mb-0">@category.CategoryName</h2>
+                            <span class="badge rounded-pill text-bg-light border">@productCount produit(s)</span>
+                        </div>
+
+                        @if (productCount > 0)
+                        {
+                            <p class="text-muted small mb-3">
+                                @string.Join(" · ", category.Products!.Take(3).Select(p => p.Name))
+                                @(productCount > 3 ? "…" : "")
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="text-muted small mb-3">Aucun produit dans cette catégorie.</p>
+                        }
+
+                        <div class="mt-auto d-flex flex-wrap gap-2">
+                            <a class="btn btn-soft btn-sm" asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.CategoryId">
+                                Voir les produits
+                            </a>
+                            <a class="btn btn-outline-secondary btn-sm" asp-action="Details" asp-route-id="@category.CategoryId">Détails</a>
+                            @if (isStaff)
+                            {
+                                <a class="btn btn-outline-secondary btn-sm" asp-action="Edit" asp-route-id="@category.CategoryId">Modifier</a>
+                                <a class="btn btn-outline-danger btn-sm" asp-action="Delete" asp-route-id="@category.CategoryId">Supprimer</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M4 5h7v6H4zM13 5h7v6h-7zM4 13h7v6H4zM13 13h7v6h-7z" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <h3>Aucune catégorie</h3>
+        <p>Les catégories permettent d'organiser le catalogue et de filtrer les produits.</p>
+        @if (isStaff)
+        {
+            <a class="btn btn-brand" asp-action="Create">Créer la première catégorie</a>
+        }
+    </div>
+}

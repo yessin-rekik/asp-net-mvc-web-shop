@@ -1,0 +1,69 @@
+@model IList<Order>
+@{
+    ViewData["Title"] = "Mes commandes";
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Compte</span>
+        <h1 class="page-title">Mes commandes</h1>
+        <p class="page-subtitle">Retrouvez l'historique et le détail de vos achats.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="Product" asp-action="Index">Continuer mes achats</a>
+</div>
+
+@if (Model.Any())
+{
+    <div class="panel">
+        <div class="table-responsive">
+            <table class="table table-modern align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Commande</th>
+                        <th>Date</th>
+                        <th class="text-center">Articles</th>
+                        <th class="text-end">Total</th>
+                        <th class="text-center">Statut</th>
+                        <th class="text-center pe-4">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold">#@order.Id.ToString("D5")</div>
+                                <div class="text-muted small">@order.PaymentMethod</div>
+                            </td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-center">@order.Items.Sum(i => i.Quantity)</td>
+                            <td class="text-end fw-bold">@order.TotalAmount.ToString("N2") DT</td>
+                            <td class="text-center">
+                                <span class="status-badge @OrderStatuses.GetBadgeClass(order.Status)">
+                                    @OrderStatuses.GetLabel(order.Status)
+                                </span>
+                            </td>
+                            <td class="text-center pe-4">
+                                <a class="btn btn-soft btn-sm" asp-action="Confirmation" asp-route-orderId="@order.Id">Détails</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M6 3h12l1 18H5L6 3Z" stroke-linejoin="round" />
+                <path d="M9 8h6M9 12h6" stroke-linecap="round" />
+            </svg>
+        </div>
+        <h3>Aucune commande pour le moment</h3>
+        <p>Vos commandes apparaîtront ici dès que vous aurez validé votre premier panier.</p>
+        <a class="btn btn-brand" asp-controller="Product" asp-action="Index">Découvrir les produits</a>
+    </div>
+}

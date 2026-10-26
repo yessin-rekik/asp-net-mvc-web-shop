@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Sac à dos">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0369a1"/><stop offset="1" stop-color="#0c4a6e"/></linearGradient></defs>
+  <rect width="800" height="600" fill="url(#g)"/>
+  <circle cx="120" cy="500" r="160" fill="#fff" opacity=".07"/>
+  <g fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M310 250v-30a90 90 0 0 1 180 0v30"/>
+    <rect x="290" y="250" width="220" height="220" rx="44"/>
+    <path d="M350 250v-20M450 250v-20M340 360h120v55H340z"/>
+  </g>
+  <text x="400" y="520" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700" fill="#e0f2fe">Voyage</text>
+</svg>

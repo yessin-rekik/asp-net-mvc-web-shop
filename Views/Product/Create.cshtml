@@ -1,0 +1,92 @@
+@model CreateViewModel
+@{
+    ViewData["Title"] = "Nouveau produit";
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="Index">Produits</a></li>
+    <li>Nouveau produit</li>
+</ul>
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Administration</span>
+        <h1 class="page-title">Nouveau produit</h1>
+        <p class="page-subtitle">Ajoutez une nouvelle référence à votre catalogue.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <form enctype="multipart/form-data" asp-action="Create" method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger d-none-empty"></div>
+
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" placeholder="Ex. Casque Bluetooth" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                                <option value="">Choisir une catégorie</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Price" class="form-control" step="0.01" min="0" />
+                                <span class="input-group-text">DT</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="QteStock" class="form-label"></label>
+                            <input asp-for="QteStock" class="form-control" min="0" />
+                            <span asp-validation-for="QteStock" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="ImagePath" class="form-label"></label>
+                            <input asp-for="ImagePath" type="file" accept="image/*" class="form-control" id="imageInput" />
+                            <span asp-validation-for="ImagePath" class="text-danger small"></span>
+                            <div class="form-text">JPG, PNG, GIF ou WEBP — 5 Mo maximum.</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button type="submit" class="btn btn-brand px-4">Créer le produit</button>
+                        <a class="btn btn-outline-secondary" asp-action="Index">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="panel">
+            <div class="panel-header">Aperçu de l'image</div>
+            <div class="panel-body">
+                <img id="imagePreview" class="image-preview" src="~/images/placeholder.svg" alt="Aperçu du produit" />
+                <p class="text-muted small mb-0 mt-3">
+                    Une image nette et bien cadrée met mieux en valeur votre produit.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById("imageInput")?.addEventListener("change", function (event) {
+            var file = event.target.files && event.target.files[0];
+            if (!file) return;
+            var preview = document.getElementById("imagePreview");
+            preview.src = URL.createObjectURL(file);
+        });
+    </script>
+}

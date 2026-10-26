@@ -1,0 +1,105 @@
+@model OrderViewModel
+@{
+    ViewData["Title"] = "Passer la commande";
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-controller="Panier" asp-action="Index">Mon panier</a></li>
+    <li>Passer la commande</li>
+</ul>
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Étape finale</span>
+        <h1 class="page-title">Passer la commande</h1>
+        <p class="page-subtitle">Vérifiez vos informations avant de valider.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <form asp-controller="Panier" asp-action="Checkout" method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                    <div class="form-section-title">Livraison</div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label"></label>
+                        <textarea asp-for="Address" class="form-control" rows="3"
+                                  placeholder="Ex. 12 rue de la République, Tunis 1000"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-section-title">Paiement</div>
+                    <div class="d-grid gap-2 mb-4">
+                        <label class="payment-option">
+                            <input type="radio" asp-for="PaymentMethod" value="CreditCard" />
+                            <span>
+                                <strong class="d-block">Carte de crédit</strong>
+                                <span class="text-muted small">Paiement simulé — aucune donnée bancaire n'est stockée.</span>
+                            </span>
+                        </label>
+                        <label class="payment-option">
+                            <input type="radio" asp-for="PaymentMethod" value="Paypal" />
+                            <span>
+                                <strong class="d-block">PayPal</strong>
+                                <span class="text-muted small">Vous seriez redirigé vers PayPal en production.</span>
+                            </span>
+                        </label>
+                    </div>
+                    <span asp-validation-for="PaymentMethod" class="text-danger small"></span>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button type="submit" class="btn btn-brand px-4 py-2">Valider la commande</button>
+                        <a class="btn btn-outline-secondary" asp-controller="Panier" asp-action="Index">Retour au panier</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="panel summary-card">
+            <div class="panel-header d-flex justify-content-between">
+                <span>Votre panier</span>
+                <span class="text-muted small">@Model.CartItems.Sum(i => i.Quantity) article(s)</span>
+            </div>
+            <div class="panel-body">
+                @foreach (var item in Model.CartItems)
+                {
+                    var imagePath = string.IsNullOrWhiteSpace(item.Image)
+                        ? Url.Content("~/images/placeholder.svg")
+                        : Url.Content("~/images/" + item.Image);
+                    <div class="d-flex align-items-center gap-3 py-1">
+                        <img src="@imagePath" alt="@item.ProductName" class="cart-thumb" style="width:52px;height:52px;"
+                             onerror="this.onerror=null;this.src='/images/placeholder.svg';" />
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold text-truncate">@item.ProductName</div>
+                            <div class="text-muted small">@item.Quantity × @item.Price.ToString("N2") DT</div>
+                        </div>
+                        <div class="fw-bold small text-nowrap">@item.TotalPrice.ToString("N2") DT</div>
+                    </div>
+                }
+
+                <hr class="my-3" />
+                <div class="summary-line">
+                    <span>Sous-total</span>
+                    <span>@Model.TotalAmount.ToString("N2") DT</span>
+                </div>
+                <div class="summary-line">
+                    <span>Livraison</span>
+                    <span class="text-success fw-semibold">Offerte</span>
+                </div>
+                <div class="summary-total">
+                    <span>Total</span>
+                    <span>@Model.TotalAmount.ToString("N2") DT</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

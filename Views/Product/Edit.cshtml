@@ -1,0 +1,95 @@
+@model EditViewModel
+@{
+    ViewData["Title"] = "Modifier le produit";
+    var imagePath = string.IsNullOrWhiteSpace(Model.ExistingImagePath)
+        ? Url.Content("~/images/placeholder.svg")
+        : Url.Content("~/images/" + Model.ExistingImagePath);
+}
+
+<ul class="breadcrumb-lite">
+    <li><a asp-action="Index">Produits</a></li>
+    <li><a asp-action="Details" asp-route-id="@Model.ProductId">@Model.Name</a></li>
+    <li>Modifier</li>
+</ul>
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Administration</span>
+        <h1 class="page-title">Modifier le produit</h1>
+        <p class="page-subtitle">Mettez à jour les informations et le stock de cette référence.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="panel">
+            <div class="panel-body p-4">
+                <form asp-controller="Product" asp-action="Edit" enctype="multipart/form-data" method="post">
+                    <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                    <input type="hidden" asp-for="ProductId" />
+                    <input type="hidden" asp-for="ExistingImagePath" />
+
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label asp-for="Name" class="form-label"></label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-5">
+                            <label asp-for="CategoryId" class="form-label"></label>
+                            <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId"></select>
+                            <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Price" class="form-label"></label>
+                            <div class="input-group">
+                                <input asp-for="Price" class="form-control" step="0.01" min="0" />
+                                <span class="input-group-text">DT</span>
+                            </div>
+                            <span asp-validation-for="Price" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="QteStock" class="form-label"></label>
+                            <input asp-for="QteStock" class="form-control" min="0" />
+                            <span asp-validation-for="QteStock" class="text-danger small"></span>
+                        </div>
+                        <div class="col-12">
+                            <label asp-for="ImagePath" class="form-label">Remplacer l'image (optionnel)</label>
+                            <input asp-for="ImagePath" type="file" accept="image/*" class="form-control" id="imageInput" />
+                            <span asp-validation-for="ImagePath" class="text-danger small"></span>
+                            <div class="form-text">Laissez vide pour conserver l'image actuelle.</div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap gap-2 mt-4">
+                        <button type="submit" class="btn btn-brand px-4">Enregistrer</button>
+                        <a class="btn btn-outline-secondary" asp-action="Details" asp-route-id="@Model.ProductId">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="panel">
+            <div class="panel-header">Image actuelle</div>
+            <div class="panel-body">
+                <img id="imagePreview" class="image-preview" src="@imagePath" alt="Image actuelle du produit" />
+                <p class="text-muted small mb-0 mt-3">La nouvelle image remplacera celle-ci après l'enregistrement.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.getElementById("imageInput")?.addEventListener("change", function (event) {
+            var file = event.target.files && event.target.files[0];
+            if (!file) return;
+            var preview = document.getElementById("imagePreview");
+            preview.src = URL.createObjectURL(file);
+        });
+    </script>
+}

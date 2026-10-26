@@ -1,0 +1,112 @@
+@model ListeCart
+@{
+    ViewData["Title"] = "Mon panier";
+    var total = Model.GetSubTotal();
+    var itemCount = Model.GetTotalQuantity();
+}
+
+<div class="page-head">
+    <div>
+        <span class="eyebrow">Commande</span>
+        <h1 class="page-title">Mon panier</h1>
+        <p class="page-subtitle">@itemCount article(s) sélectionné(s).</p>
+    </div>
+</div>
+
+@if (Model.Items.Any())
+{
+    <div class="cart-layout">
+        <div class="panel">
+            <div class="panel-header d-flex justify-content-between align-items-center">
+                <span>Articles</span>
+                <span class="text-muted small">@itemCount unité(s)</span>
+            </div>
+            <div class="panel-body py-2">
+                @foreach (var item in Model.Items)
+                {
+                    var id = item.Prod.ProductId;
+                    var imagePath = string.IsNullOrWhiteSpace(item.Prod.Image)
+                        ? Url.Content("~/images/placeholder.svg")
+                        : Url.Content("~/images/" + item.Prod.Image);
+
+                    <div class="cart-line" id="row-@id">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@id">
+                            <img class="cart-thumb" src="@imagePath" alt="@item.Prod.Name"
+                                 onerror="this.onerror=null;this.src='/images/placeholder.svg';" />
+                        </a>
+
+                        <div>
+                            <a class="cart-line-title" asp-controller="Product" asp-action="Details" asp-route-id="@id">
+                                @item.Prod.Name
+                            </a>
+                            <div class="cart-line-category">@(item.category?.CategoryName ?? "Sans catégorie")</div>
+
+                            <div class="d-flex flex-wrap align-items-center gap-3">
+                                <div class="qty-control" aria-label="Quantité de @item.Prod.Name">
+                                    <button type="button" class="MinProducts" data-id="@id" aria-label="Diminuer la quantité">−</button>
+                                    <span id="quantite_@id">@item.quantite</span>
+                                    <button type="button" class="PlusProducts" data-id="@id" aria-label="Augmenter la quantité">+</button>
+                                </div>
+                                <span class="text-muted small">@item.UnitPrice.ToString("N2") DT / unité</span>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <div class="cart-line-total" id="total_@id">@($"{item.TotalPrice:N2} DT")</div>
+                            <div class="text-muted small mt-1">
+                                <span id="rquantite_@id">@item.quantite</span> × @item.UnitPrice.ToString("N2") DT
+                            </div>
+                            <button type="button" class="cart-remove RemoveLink mt-2" data-id="@id">Retirer</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <aside>
+            <div class="panel summary-card">
+                <div class="panel-body">
+                    <h2 class="h5 fw-bold mb-3">Récapitulatif</h2>
+                    <div class="summary-line">
+                        <span>Sous-total</span>
+                        <span>@total.ToString("N2") DT</span>
+                    </div>
+                    <div class="summary-line">
+                        <span>Livraison</span>
+                        <span class="text-success fw-semibold">Offerte</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span id="totalapayer">@($"{total:N2} DT")</span>
+                    </div>
+
+                    <a class="btn btn-brand w-100 mt-3 py-2" asp-controller="Panier" asp-action="Checkout">
+                        Passer la commande
+                    </a>
+                    <a class="btn btn-outline-secondary w-100 mt-2" asp-controller="Product" asp-action="Index">
+                        Continuer mes achats
+                    </a>
+
+                    <p class="text-muted small mt-3 mb-0">
+                        Paiement sécurisé. Vous pourrez vérifier votre adresse avant validation.
+                    </p>
+                </div>
+            </div>
+        </aside>
+    </div>
+}
+else
+{
+    <div class="panel empty-state">
+        <div class="empty-icon">
+            <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.6">
+                <path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 8H6" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="10" cy="20" r="1.2" fill="currentColor" stroke="none" />
+                <circle cx="18" cy="20" r="1.2" fill="currentColor" stroke="none" />
+            </svg>
+        </div>
+        <h3>Votre panier est vide</h3>
+        <p>Parcourez le catalogue et ajoutez vos articles préférés pour commencer.</p>
+        <a class="btn btn-brand" asp-controller="Product" asp-action="Index">Découvrir les produits</a>
+    </div>
+}
